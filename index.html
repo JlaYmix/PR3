@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Вгадай число</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 100px auto;
+            text-align: center;
+            background: #1a1a2e;
+            color: white;
+        }
+        h1 { color: #e94560; }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            width: 150px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+        }
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #c73652; }
+        #message {
+            font-size: 22px;
+            margin: 20px;
+            min-height: 30px;
+        }
+        #attempts { color: #aaa; }
+        .win { color: #4ecca3; font-weight: bold; }
+        .hint { color: #ffd460; }
+    </style>
+</head>
+<body>
+    <h1>Вгадай число</h1>
+    <p>Число від 1 до 100</p>
+    <div id="message" class="hint">Введи своє перше число!</div>
+    <input type="number" id="guess" min="1" max="100" placeholder="1-100" />
+    <br>
+    <button onclick="game.check()">Перевірити</button>
+    <button onclick="game.restart()">Нова гра</button>
+    <p id="attempts">Спроб: 0</p>
+
+    <script>
+        const game = {
+            secret: 0,
+            attempts: 0,
+            maxAttempts: 10,
+            isOver: false,
+
+            init: function() {
+                this.secret = Math.floor(Math.random() * 100) + 1;
+                this.attempts = 0;
+                this.isOver = false;
+                this.showMessage('Введи своє перше число!', 'hint');
+                this.updateAttempts();
+                document.getElementById('guess').value = '';
+            },
+
+            check: function() {
+                if (this.isOver) return;
+
+                const input = document.getElementById('guess');
+                const num = parseInt(input.value);
+
+                if (!num || num < 1 || num > 100) {
+                    this.showMessage('Введи число від 1 до 100!', 'hint');
+                    return;
+                }
+
+                this.attempts++;
+                this.updateAttempts();
+                input.value = '';
+
+                if (num === this.secret) {
+                    this.showMessage(`Вірно! Число ${this.secret}! Спроб: ${this.attempts}`, 'win');
+                    this.isOver = true;
+                } else if (this.attempts >= this.maxAttempts) {
+                    this.showMessage(`Програш! Число було ${this.secret}`, 'hint');
+                    this.isOver = true;
+                } else if (num < this.secret) {
+                    this.showMessage(`Більше! (залишилось ${this.maxAttempts - this.attempts})`, 'hint');
+                } else {
+                    this.showMessage(`Менше! (залишилось ${this.maxAttempts - this.attempts})`, 'hint');
+                }
+            },
+
+            restart: function() {
+                this.init();
+            },
+
+            showMessage: function(text, cls) {
+                const msg = document.getElementById('message');
+                msg.textContent = text;
+                msg.className = cls;
+            },
+
+            updateAttempts: function() {
+                document.getElementById('attempts').textContent = `Спроб: ${this.attempts}`;
+            }
+        };
+
+        game.init();
+
+        document.getElementById('guess').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') game.check();
+        });
+    </script>
+</body>
+</html>
