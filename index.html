@@ -6,25 +6,58 @@
 </head>
 <body>
     <script>
-        function greet(greeting) {
-            return greeting + ', my name is ' + this.name;
+        function greet() {
+            return 'Hi, my name is ' + this.name;
+        }
+
+        function getHealth() {
+            return this.name + ' health: ' + this.health;
+        }
+
+        function attack(target) {
+            target.health -= this.damage;
+            if (target.health < 0) target.health = 0;
+            return this.name + ' attacks ' + target.name + ' for ' + this.damage + ' damage';
+        }
+
+        function isAlive() {
+            return this.health > 0;
         }
 
         const character = {
             name: 'Pikachu',
-            greet: greet
+            health: 100,
+            damage: 20,
+            greet: greet,
+            getHealth: getHealth,
+            attack: attack,
+            isAlive: isAlive,
         };
 
         const enemy = {
             name: 'Charmander',
-            greet: greet
+            health: 80,
+            damage: 15,
+            greet: greet,
+            getHealth: getHealth,
+            attack: attack,
+            isAlive: isAlive,
         };
 
-        console.log(character.greet('Hi'));
-        console.log(enemy.greet('Hi'))
+        console.log(character.greet());
+        console.log(enemy.greet());
 
-        console.log(enemy.greet.call(character, 'Hello'));
-        console.log(enemy.greet.apply(character, ['Hihi']));
-    </script>
+        let round = 1;
+        while (character.isAlive() && enemy.isAlive()) {
+            console.log('Раунд ' + round);
+            console.log(character.attack(enemy));
+            console.log(enemy.getHealth());
+            if (!enemy.isAlive()) break;
+            console.log(enemy.attack(character));
+            console.log(character.getHealth());
+            round++;
+        }
+        console.log(character.isAlive() ? character.name + ' переміг!' : enemy.name + ' переміг!');
+        </script>
 </body>
 </html>
